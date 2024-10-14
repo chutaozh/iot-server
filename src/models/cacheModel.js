@@ -1,12 +1,11 @@
-const { v4: uuidv4 } = require('uuid');
 const db = require('../config/db');
 
-class SessionModel {
-    static insertSession({ id, code }) {
+class CacheModel {
+    static addCache({ id, content, type }) {
         return new Promise((resolve, reject) => {
             db.query(
-                'INSERT INTO iot_session (id, verify_code, create_time) VALUES (?, ?, ?)',
-                [id, code, new Date()],
+                'INSERT INTO iot_cache (id, content, create_time, cache_type) VALUES (?, ?, ?, ?)',
+                [id, content, new Date(), type],
                 (err, result) => {
                     if (err) reject(err);
                     else resolve(result);
@@ -15,23 +14,23 @@ class SessionModel {
         });
     }
 
-    static deleteSession(id) {
+    static deleteCache(id) {
         return new Promise((resolve, reject) => {
-            db.query('DELETE FROM iot_session WHERE id = ?', [id], (err, result) => {
+            db.query('DELETE FROM iot_cache WHERE id = ?', [id], (err, result) => {
                 if (err) reject(err);
                 else resolve(result);
             });
         });
     }
 
-    static getSession(id) {
+    static getCache(id) {
         return new Promise((resolve, reject) => {
-            db.query('SELECT * FROM iot_session WHERE id = ?', [id], (err, result) => {
+            db.query('SELECT * FROM iot_cache WHERE id = ?', [id], (err, result) => {
                 if (err) reject(err);
-                else resolve(result);
+                else resolve(result[0]);
             });
         })
     }
 }
 
-module.exports = SessionModel;
+module.exports = CacheModel;

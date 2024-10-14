@@ -4,12 +4,14 @@ const jwt = require('jsonwebtoken');
 const secretKey = 'ABCD1234';
 
 // 生成 Token 的函数
-const generateToken = (domain, ua, ip, account) => {
+const generateToken = ({ domain, ua, ip, account, userId, userName }) => {
     const payload = {
         ua,
         ip,
+        userId,
         domain,
-        account
+        account,
+        userName
     };
 
     const options = {
