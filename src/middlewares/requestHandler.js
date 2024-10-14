@@ -35,17 +35,18 @@ const requestHandler = async (req, res, next) => {
         });
     }
 
+    const expCallback = (code = 401, message = '登录过期，请重新登录') => {
+        return res.status(200).json({
+            code: code,
+            success: false,
+            message,
+            data: null,
+        })
+    };
+
     try {
         const data = verifyToken(token);
-        const expCallback = (code = 401, message = '登录过期，请重新登录') => {
-            return res.status(200).json({
-                code: code,
-                success: false,
-                message,
-                data: null,
-            })
-        };
-
+        
         if (typeof data === 'object') {
             const cache = await cacheService.getCache(data?.userId);
 

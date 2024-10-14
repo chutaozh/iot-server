@@ -71,7 +71,7 @@ class UserService {
                     content: result.data,
                     type: CacheType.TOKEN
                 });
-                logService.add({ type: LogType.LOGIN, content: `${user.user_name}于 ${new Date().toLocaleString()} 登录系统，IP：${ip}`, source: 'userService.login' });
+                logService.add({ type: LogType.LOGIN, content: `${user.user_name}于 ${new Date().toLocaleString()} 登录系统，IP：${ip}`, source: '' });
             } else {
                 result.code = 400;
                 result.message = '账号不存在';
