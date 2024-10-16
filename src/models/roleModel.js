@@ -19,7 +19,7 @@ class RoleModel {
 
     static async deleteRoles(ids = [], loginInfo) {
         return new Promise((resolve, reject) => {
-            db.query('UPDATE iot_role SET is_Del = 1, update_id = ?, update_time = NOW() WHERE id IN (?) AND is_del = 0', [loginInfo?.userId, ids], (err, result) => {
+            db.query('UPDATE iot_role SET is_Del = 1, update_id = ?, update_time = NOW() WHERE id IN (?) AND role_type != 1 AND is_del = 0', [loginInfo?.userId, ids], (err, result) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -40,7 +40,7 @@ class RoleModel {
             const updateFields = Object.keys(role).filter((key) => allowFields.includes(key)).map(key => `${key} = ?`).join(', ');
             const values = Object.values(role).map((value) => value === '' ? null : value);
 
-            db.query(`UPDATE iot_role SET ${updateFields}, update_id = ?, update_time = NOW() WHERE id = ? AND is_del = 0`, [...values, loginInfo?.userId, id], (err, result) => {
+            db.query(`UPDATE iot_role SET ${updateFields}, update_id = ?, update_time = NOW() WHERE id = ? AND role_type != 1 AND is_del = 0`, [...values, loginInfo?.userId, id], (err, result) => {
                 if (err) reject(err);
                 else resolve(result);
             });

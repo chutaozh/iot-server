@@ -5,12 +5,12 @@ CREATE TABLE `iot_user` (
   `user_name` varchar(16) NOT NULL,
   `account` varchar(16) NOT NULL,
   `password` varchar(256) NOT NULL,
-  `status` int NOT NULL COMMENT '0：禁用，1：启用',
+  `status` int NOT NULL DEFAULT '1' COMMENT '0：禁用，1：启用',
   `update_id` int NOT NULL,
   `update_time` datetime NOT NULL,
   `create_id` int NOT NULL,
   `create_time` datetime NOT NULL,
-  `is_del` int NOT NULL,
+  `is_del` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
