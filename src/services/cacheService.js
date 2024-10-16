@@ -1,7 +1,7 @@
 const svgCaptcha = require('svg-captcha');
 const { v4: uuidv4 } = require('uuid');
 const { LogType, CacheType } = require('../utils/constant');
-const svgToBase64 = require('../utils/svgToBase64');
+const { svgToBase64 } = require('../utils/common');
 const logService = require('./logService');
 const cacheModel = require('../models/cacheModel');
 
