@@ -23,7 +23,7 @@ class CacheService {
                 captcha: base64Captcha
             };
         } catch (error) {
-            logService.add({ type: LogType.ERROR, content: error.message, source: 'cacheService.getCaptcha' });
+            logService.add(LogType.ERROR, error.message, 'cacheService.getCaptcha');
             throw new Error(error);
         }
     }
@@ -32,7 +32,7 @@ class CacheService {
         try {
             await cacheModel.addCache({ id, content, type });
         } catch (error) {
-            logService.add({ type: LogType.ERROR, content: error.message, source: 'cacheService.addCache' });
+            logService.add(LogType.ERROR, error.message, 'cacheService.addCache');
             throw new Error(error);
         }
     }
@@ -42,7 +42,7 @@ class CacheService {
             const session = await cacheModel.getCache(id);
             return session;
         } catch (error) {
-            logService.add({ type: LogType.ERROR, content: error.message, source: 'cacheService.getCache' });
+            logService.add(LogType.ERROR, error.message, 'cacheService.getCache');
             throw new Error(error);
         }
     }
@@ -53,7 +53,7 @@ class CacheService {
                 await cacheModel.deleteCache(id);
             }
         } catch (error) {
-            logService.add({ type: LogType.ERROR, content: error.message, source: 'cacheService.deleteCache' });
+            logService.add(LogType.ERROR, error.message, 'cacheService.deleteCache');
             throw new Error(error);
         }
     }

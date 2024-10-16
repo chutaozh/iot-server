@@ -8,29 +8,29 @@ class LogModel {
             const where = [];
 
             if (startTime) {
-                where.push(`create_time >= '${startTime}'`);
+                where.push(`L.create_time >= '${startTime}'`);
             }
 
             if (endTime) {
-                where.push(`create_time <= '${endTime}'`);
+                where.push(`L.create_time <= '${endTime}'`);
             }
 
             if (type) {
-                where.push(`log_type = '${type}'`);
+                where.push(`L.log_type = '${type}'`);
             }
 
-            const sql = `SELECT * FROM iot_log ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY create_time DESC LIMIT ${offset}, ${limit}`;
+            const sql = `SELECT L.*, U.user_name FROM iot_log L JOIN iot_user U ON L.create_id = U.id ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY L.create_time DESC LIMIT ${offset}, ${limit}`;
             db.promise().query(sql).then(result => {
                 resolve(result[0]);
             }).catch(reject);
         });
     }
 
-    static async add({ type, content, source } = {}) {
+    static async add({ type, content, source, userId } = {}) {
         return new Promise((resolve, reject) => {
             db.query(
-                `INSERT INTO iot_log (log_info, log_type, log_source, create_time) VALUES (?, ?, ?, ?)`,
-                [content, type, source, new Date()],
+                `INSERT INTO iot_log (log_info, log_type, log_source, create_time, create_id) VALUES (?, ?, ?, ?, ?)`,
+                [content, type, source, new Date(), userId],
                 (err, result) => {
                     if (err) reject(err);
                     else resolve(result);
@@ -47,7 +47,7 @@ class LogModel {
             }
 
             if (endTime) {
-                where.push(`create_time >= '${endTime}'`);
+                where.push(`create_time <= '${endTime}'`);
             }
 
             if (type) {

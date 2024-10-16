@@ -6,7 +6,8 @@ const connection = mysql.createConnection({
   user: 'admin', // 数据库用户名
   password: 'abc123', // 数据库密码
   database: 'iot_db', // 数据库名称
-  multipleStatements: true // 允许执行多条SQL语句
+  multipleStatements: true, // 允许执行多条SQL语句
+  pool: 100, // 连接池大小
 });
 
 connection.connect((err) => {

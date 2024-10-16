@@ -1,3 +1,4 @@
+const { responseErrorHandler } = require('../utils/common');
 const userService = require('../services/userService');
 
 const login = async (req, res) => {
@@ -5,11 +6,7 @@ const login = async (req, res) => {
         const result = await userService.login(req.body, req.clientInfo);
         res.sendResponse(result);
     } catch (error) {
-        res.sendResponse({
-            code: 500,
-            data: null,
-            message: '服务器异常'
-        });
+        responseErrorHandler(res, error);
     }
 };
 
@@ -22,25 +19,44 @@ const refreshToken = async (req, res) => {
             message: '刷新成功'
         });
     } catch (error) {
-        res.sendResponse({
-            code: 500,
-            data: null,
-            message: '服务器异常'
-        });
+        responseErrorHandler(res, error);
     }
 };
 
 const addUser = async (req, res) => {
     try {
-        const result = await userService.addUser(req.body);
+        const result = await userService.addUser(req.body, req.loginInfo);
         res.sendResponse(result);
     } catch (error) {
-        res.sendResponse({
-            code: 500,
-            data: null,
-            message: '服务器异常'
-        });
+        responseErrorHandler(res, error);
     }
 };
 
-module.exports = { login, refreshToken, addUser };
+const updateUser = async (req, res) => {
+    try {
+        const result = await userService.updateUser(req.body, req.loginInfo);
+        res.sendResponse(result);
+    } catch (error) {
+        responseErrorHandler(res, error);
+    }
+};
+
+const deleteUsers = async (req, res) => {
+    try {
+        const result = await userService.deleteUsers(req.body, req.loginInfo);
+        res.sendResponse(result);
+    } catch (error) {
+        responseErrorHandler(res, error);
+    }
+};
+
+const updatePassword = async (req, res) => {
+    try {
+        const result = await userService.updatePassword({...req.body, userId: req.loginInfo.userId});
+        res.sendResponse(result);
+    } catch (error) {
+        responseErrorHandler(res, error);
+    }
+}
+
+module.exports = { login, refreshToken, addUser, updateUser, deleteUsers, updatePassword };

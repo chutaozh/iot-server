@@ -1,4 +1,4 @@
-const { dataFieldTransformer } = require('../utils/common');
+const { dataFieldToCamelCase } = require('../utils/common');
 const logModel = require('../models/logModel');
 
 class LogService {
@@ -10,15 +10,15 @@ class LogService {
                 total,
                 pageNum,
                 pageSize,
-                list: result.map(item => dataFieldTransformer({...item, create_time: new Date(item.create_time).toLocaleString()})),
+                list: result.map(item => dataFieldToCamelCase({ ...item, create_time: new Date(item.create_time).toLocaleString() })),
             };
         } catch (error) {
             throw new Error(error);
         }
     }
 
-    static async add({ type, content, source }) {
-        logModel.add({ type, content, source });
+    static async add(type, content, source = '', userId = '') {
+        logModel.add({ type, content, source, userId });
     }
 }
 

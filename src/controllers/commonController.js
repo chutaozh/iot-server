@@ -1,3 +1,4 @@
+const { responseErrorHandler } = require('../utils/common');
 const cacheService = require('../services/cacheService');
 
 const getCaptcha = async (req, res) => {
@@ -8,11 +9,7 @@ const getCaptcha = async (req, res) => {
             message: '获取图形验证码成功'
         });
     } catch (error) {
-        res.sendResponse({
-            code: 500,
-            data: null,
-            message: '服务器异常'
-        });
+        responseErrorHandler(res, error);
     }
 };
 
