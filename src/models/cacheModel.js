@@ -5,7 +5,7 @@ class CacheModel {
         return new Promise((resolve, reject) => {
             db.query(
                 'INSERT INTO iot_cache (id, content, create_time, cache_type) VALUES (?, ?, ?, ?)',
-                [id, content, new Date(), type],
+                [String(id), content, new Date(), type],
                 (err, result) => {
                     if (err) reject(err);
                     else resolve(result);
@@ -16,7 +16,7 @@ class CacheModel {
 
     static deleteCache(id) {
         return new Promise((resolve, reject) => {
-            db.query('DELETE FROM iot_cache WHERE id = ?', [id], (err, result) => {
+            db.query('DELETE FROM iot_cache WHERE id = ?', [String(id)], (err, result) => {
                 if (err) reject(err);
                 else resolve(result);
             });
@@ -25,7 +25,7 @@ class CacheModel {
 
     static getCache(id) {
         return new Promise((resolve, reject) => {
-            db.query('SELECT * FROM iot_cache WHERE id = ?', [id], (err, result) => {
+            db.query('SELECT * FROM iot_cache WHERE id = ?', [String(id)], (err, result) => {
                 if (err) reject(err);
                 else resolve(result[0]);
             });

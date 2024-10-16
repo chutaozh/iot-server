@@ -30,7 +30,7 @@ class UserService {
 
             if (!cache) {
                 result.code = 400;
-                result.message = '验证码已过期';
+                result.message = '验证码失效，请重新获取';
                 return result;
             }
 
@@ -55,7 +55,6 @@ class UserService {
                     return result;
                 }
 
-                cacheService.deleteCache(sessionId);
                 result.code = 200;
                 result.message = '登录成功';
                 result.data = generateToken({
@@ -66,7 +65,8 @@ class UserService {
                     ua,
                     domain
                 });
-                await cacheService.deleteCache(user.id);
+                await cacheService.deleteCache(sessionId); // 删除验证码缓存
+                await cacheService.deleteCache(user.id); // 删除旧token缓存
                 await cacheService.addCache({
                     id: user.id,
                     content: result.data,

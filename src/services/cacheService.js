@@ -53,7 +53,6 @@ class CacheService {
                 await cacheModel.deleteCache(id);
             }
         } catch (error) {
-            logService.add(LogType.ERROR, error.message, 'cacheService.deleteCache');
             throw new Error(error);
         }
     }
