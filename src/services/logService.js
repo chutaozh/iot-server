@@ -16,10 +16,6 @@ class LogService {
             throw new Error(error);
         }
     }
-
-    static async add(type, content, source = '', userId = '') {
-        logModel.add({ type, content, source, userId });
-    }
 }
 
 module.exports = LogService;

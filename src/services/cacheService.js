@@ -2,7 +2,7 @@ const svgCaptcha = require('svg-captcha');
 const { v4: uuidv4 } = require('uuid');
 const { LogType, CacheType } = require('../utils/constant');
 const { svgToBase64 } = require('../utils/common');
-const logService = require('./logService');
+const logModel = require('../models/logModel');
 const cacheModel = require('../models/cacheModel');
 
 class CacheService {
@@ -23,7 +23,7 @@ class CacheService {
                 captcha: base64Captcha
             };
         } catch (error) {
-            logService.add(LogType.ERROR, error.message, 'cacheService.getCaptcha');
+            logModel.add(LogType.ERROR, error.message, 'cacheService.getCaptcha');
             throw new Error(error);
         }
     }
@@ -32,7 +32,7 @@ class CacheService {
         try {
             await cacheModel.addCache({ id, content, type });
         } catch (error) {
-            logService.add(LogType.ERROR, error.message, 'cacheService.addCache');
+            logModel.add(LogType.ERROR, error.message, 'cacheService.addCache');
             throw new Error(error);
         }
     }
@@ -42,7 +42,7 @@ class CacheService {
             const session = await cacheModel.getCache(id);
             return session;
         } catch (error) {
-            logService.add(LogType.ERROR, error.message, 'cacheService.getCache');
+            logModel.add(LogType.ERROR, error.message, 'cacheService.getCache');
             throw new Error(error);
         }
     }

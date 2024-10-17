@@ -26,7 +26,7 @@ class LogModel {
         });
     }
 
-    static async add({ type, content, source, userId } = {}) {
+    static async add(type, content, source = '', userId = '') {
         return new Promise((resolve, reject) => {
             db.query(
                 `INSERT INTO iot_log (log_info, log_type, log_source, create_time, create_id) VALUES (?, ?, ?, ?, ?)`,

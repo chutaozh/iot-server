@@ -2,8 +2,9 @@ const crypto = require('crypto');
 const { LogType, CacheType } = require('../utils/constant');
 const { dataFieldToSnakeCase } = require('../utils/common');
 const { generateToken, verifyToken } = require('../utils/tokenHandler');
-const logService = require('./logService');
-const cacheService = require('./cacheService');
+const logModel = require('../models/logModel');
+const cacheModel = require('../models/cacheModel');
+const roleModel = require('../models/roleModel');
 const userModel = require('../models/userModel');
 
 class UserService {
@@ -26,7 +27,7 @@ class UserService {
                 return result;
             }
 
-            const cache = await cacheService.getCache(sessionId);
+            const cache = await cacheModel.getCache(sessionId);
 
             if (!cache) {
                 result.code = 400;
@@ -65,14 +66,14 @@ class UserService {
                     ua,
                     domain
                 });
-                await cacheService.deleteCache(sessionId); // 删除验证码缓存
-                await cacheService.deleteCache(user.id); // 删除旧token缓存
-                await cacheService.addCache({
+                await cacheModel.deleteCache(sessionId); // 删除验证码缓存
+                await cacheModel.deleteCache(user.id); // 删除旧token缓存
+                await cacheModel.addCache({
                     id: user.id,
                     content: result.data,
                     type: CacheType.TOKEN
                 });
-                logService.add(LogType.LOGIN, `登录系统，IP：${ip}`, '', user.id);
+                logModel.add(LogType.LOGIN, `登录系统，IP：${ip}`, '', user.id);
             } else {
                 result.code = 400;
                 result.message = '账号不存在';
@@ -81,7 +82,7 @@ class UserService {
 
             return result;
         } catch (error) {
-            logService.add(LogType.ERROR, error.message, 'userService.login');
+            logModel.add(LogType.ERROR, error.message, 'userService.login');
             throw new Error(error);
         }
     }
@@ -105,26 +106,31 @@ class UserService {
                     userName: data?.userName,
                     account: data?.account,
                 });
-                await cacheService.deleteCache(data?.userId);
-                await cacheService.addCache({ id: data?.userId, content: newToken, type: CacheType.TOKEN });
+                await cacheModel.deleteCache(data?.userId);
+                await cacheModel.addCache({ id: data?.userId, content: newToken, type: CacheType.TOKEN });
                 return newToken;
             }
 
             return token;
 
         } catch (error) {
-            logService.add(LogType.ERROR, error.message, 'userService.refreshToken', req.loginInfo?.userId);
+            logModel.add(LogType.ERROR, error.message, 'userService.refreshToken', req.loginInfo?.userId);
             throw new Error(error);
         }
     }
 
     /** 添加账号 */
-    static async addUser({ account, userName }, loginInfo) {
+    static async addUser({ account, userName, roleId }, loginInfo) {
         try {
             const result = { code: 400, messageL: '' };
 
             if (!account?.trim() || !userName?.trim()) {
                 result.message = '账号或用户名不能为空';
+                return result;
+            }
+
+            if(!roleId) {
+                result.message = '必须分配角色';
                 return result;
             }
 
@@ -145,14 +151,15 @@ class UserService {
                 result.code = 200;
                 result.message = '添加成功';
                 result.data = res.insertId;
-                logService.add(LogType.OPERATION, `添加账号：${account}`, '', loginInfo?.userId);
+                logModel.add(LogType.OPERATION, `添加账号：${account}`, '', loginInfo?.userId);
+                await roleModel.addUserRoles({ userId: res.insertId, roleIds: [roleId] });
             } else {
                 result.message = '添加失败';
             }
 
             return result;
         } catch (error) {
-            logService.add(LogType.ERROR, error.message, 'userService.addUser', loginInfo?.userId);
+            logModel.add(LogType.ERROR, error.message, 'userService.addUser', loginInfo?.userId);
             throw new Error(error);
         }
     }
@@ -184,7 +191,7 @@ class UserService {
 
                 if(logContent.length > 0){
                     logContent.push(`账号：${user?.account}`);
-                    logService.add(LogType.OPERATION, logContent.join('；'), '', loginInfo?.userId);
+                    logModel.add(LogType.OPERATION, logContent.join('；'), '', loginInfo?.userId);
                 }
 
                 return {
@@ -198,7 +205,7 @@ class UserService {
                 message: '修改失败'
             }
         } catch (error) {
-            logService.add(LogType.ERROR, error.message, 'userService.updateUser', loginInfo?.userId);
+            logModel.add(LogType.ERROR, error.message, 'userService.updateUser', loginInfo?.userId);
             throw new Error(error);
         }
     }
@@ -209,7 +216,7 @@ class UserService {
             const res = await userModel.deleteUsers(userIds, loginInfo);
 
             if (res.result.affectedRows >= 1) {
-                logService.add(LogType.OPERATION, `删除用户：${res.users.map(item => item.account).join('，')}`, '', loginInfo?.userId);
+                logModel.add(LogType.OPERATION, `删除用户：${res.users.map(item => item.account).join('，')}`, '', loginInfo?.userId);
                 return {
                     code: 200,
                     message: '删除成功'
@@ -221,7 +228,7 @@ class UserService {
                 message: '删除失败'
             }
         } catch (error) {
-            logService.add(LogType.ERROR, error.message, 'userService.deleteUsers', loginInfo?.userId);
+            logModel.add(LogType.ERROR, error.message, 'userService.deleteUsers', loginInfo?.userId);
             throw new Error(error);
         }
     }
@@ -258,7 +265,7 @@ class UserService {
 
             return result;
         } catch (error) {
-            logService.add(LogType.ERROR, error.message, 'userService.updatePassword', userId);
+            logModel.add(LogType.ERROR, error.message, 'userService.updatePassword', userId);
             throw new Error(error);
         }
     }
