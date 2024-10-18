@@ -19,7 +19,7 @@ const requestHandler = async (req, res, next) => {
         req.clientInfo.ip = ip.replace('::ffff:', '');
     }
 
-    if (whiteList.includes(path)) {
+    if (whiteList.includes(path.toLowerCase())) {
         return next();
     }
 
