@@ -28,8 +28,28 @@ const deleteRoles = async (req, res) => {
     }
 }
 
+const getRoleList = async (req, res) => {
+    try {
+        const result = await roleService.getRoleList(req.body, req.loginInfo);
+        res.sendResponse(result);
+    } catch (error) {
+        responseErrorHandler(res, error);
+    }
+}
+
+const getRoleListAll = async (req, res) => {
+    try {
+        const result = await roleService.getRoleListAll();
+        res.sendResponse(result);
+    } catch (error) {
+        responseErrorHandler(res, error);
+    }
+}
+
 module.exports = {
     addRole,
     updateRole,
     deleteRoles,
+    getRoleList,
+    getRoleListAll
 }

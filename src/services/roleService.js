@@ -1,5 +1,5 @@
 const { LogType } = require('../utils/constant');
-const { dataFieldToSnakeCase } = require('../utils/common');
+const { dataFieldToSnakeCase, dataFieldToCamelCase, camelCaseToSnakeCase } = require('../utils/common');
 const logModel = require('../models/logModel');
 const roleModel = require('../models/roleModel');
 
@@ -112,7 +112,7 @@ class RoleService {
                     code: 200,
                     message: '添加成功'
                 };
-            } 
+            }
 
             return {
                 code: 400,
@@ -142,6 +142,49 @@ class RoleService {
             }
         } catch (error) {
             logModel.add(LogType.ERROR, error.message, 'roleService.deleteUserRole', loginInfo?.userId);
+            throw new Error(error);
+        }
+    }
+
+    /** 获取角色列表 */
+    static async getRoleList({ roleType, keyword, pageNum, pageSize, orderBy = 'createTime', orderType = 'desc' } = {}, loginInfo) {
+        try {
+            const result = await roleModel.getRoleList({
+                pageNum,
+                pageSize,
+                roleType,
+                keyword,
+                orderBy: camelCaseToSnakeCase(orderBy),
+                orderType: orderType.toLowerCase()
+            });
+            const total = await roleModel.getRoleCount({roleType, keyword});
+            return {
+                code: 200,
+                message: '获取列表成功',
+                data: {
+                    total,
+                    pageNum,
+                    pageSize,
+                    list: result.map(dataFieldToCamelCase)
+                }
+            }
+        } catch (error) {
+            logModel.add(LogType.ERROR, error.message, 'roleService.getRoleList', loginInfo?.userId);
+            throw new Error(error);
+        }
+    }
+
+    /** 获取所有角色 */
+    static async getRoleListAll() {
+        try {
+            const result = await roleModel.getRoleListAll();
+            return {
+                code: 200,
+                message: '获取所有角色成功',
+                data: result.map(dataFieldToCamelCase)
+            };
+        } catch (error) {
+            logModel.add(LogType.ERROR, error.message, 'roleService.getRoleListAll');
             throw new Error(error);
         }
     }

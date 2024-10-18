@@ -17,6 +17,73 @@ class RoleModel {
         });
     }
 
+    static async getRoleList({ roleType, keyword, pageNum, pageSize, orderBy = 'create_time', orderType = 'desc' } = {}) {
+        return new Promise((resolve, reject) => {
+            const allowOrderType = ['asc', 'desc'];
+            const allowOrderBy = ['role_name', 'role_type', 'create_time'];
+            const where = [];
+
+            if (roleType) {
+                where.push(`role_type = ${roleType}`);
+            }
+
+            if (keyword) {
+                where.push(`(role_name LIKE '%${keyword}%' OR remark LIKE '%${keyword}%')`);
+            }
+
+            const order = allowOrderBy.includes(orderBy) && allowOrderType.includes(orderType) ? `ORDER BY R.${orderBy} ${orderType}` : '';
+
+            const sql = `SELECT 
+                            R.id, 
+                            R.role_type, 
+                            R.role_name, 
+                            R.remark, 
+                            COUNT(UR.user_id) as user_count,
+                            R.create_time
+                        FROM iot_role R 
+                        LEFT JOIN iot_user_role_ref UR ON R.id = UR.role_id 
+                        WHERE is_del = 0 ${where.length > 0 ? 'AND ' + where.join(' AND ') : ''} 
+                        GROUP BY R.id
+                        ${order}
+                        LIMIT ${pageSize} OFFSET ${pageNum - 1}`;
+
+            db.promise().query(sql).then(result => {
+                resolve(result[0]);
+            }).catch(reject);
+        });
+    };
+
+    static async getRoleListAll() {
+        return new Promise((resolve, reject) => {
+            db.query('SELECT id, role_type, role_name, remark, create_time FROM iot_role WHERE is_del = 0', (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        })
+    }
+
+    static async getRoleCount({ roleType, keyword }) {
+        return new Promise((resolve, reject) => {
+            let where = [];
+            if (roleType) {
+                where.push(`role_type = ${roleType}`);
+            }
+            if (keyword) {
+                where.push(`role_name LIKE '%${keyword}%'`);
+            }
+            db.query(`SELECT COUNT(*) AS count FROM iot_role WHERE is_del = 0 ${where.length > 0 ? 'AND ' + where.join(' AND ') : ''}`, (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result[0].count);
+                }
+            });
+        });
+    }
+
     static async deleteRoles(ids = [], loginInfo) {
         return new Promise((resolve, reject) => {
             db.query('UPDATE iot_role SET is_Del = 1, update_id = ?, update_time = NOW() WHERE id IN (?) AND role_type != 1 AND is_del = 0', [loginInfo?.userId, ids], (err, result) => {

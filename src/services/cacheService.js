@@ -19,9 +19,12 @@ class CacheService {
             const base64Captcha = await svgToBase64(captcha.data);
 
             return {
-                sessionId: _sessionId,
-                captcha: base64Captcha
-            };
+                message: '获取图形验证码成功',
+                data: {
+                    sessionId: _sessionId,
+                    captcha: base64Captcha
+                },
+            }
         } catch (error) {
             logModel.add(LogType.ERROR, error.message, 'cacheService.getCaptcha');
             throw new Error(error);

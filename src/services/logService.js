@@ -7,11 +7,14 @@ class LogService {
             const result = await logModel.getLogList({ pageNum, pageSize, startTime, endTime, type });
             const total = await logModel.logCount({ startTime, endTime, type });
             return {
-                total,
-                pageNum,
-                pageSize,
-                list: result.map(item => dataFieldToCamelCase({ ...item, create_time: new Date(item.create_time).toLocaleString() })),
-            };
+                message: '获取日志列表成功',
+                data: {
+                    total,
+                    pageNum,
+                    pageSize,
+                    list: result.map(item => dataFieldToCamelCase({ ...item, create_time: new Date(item.create_time).toLocaleString() })),
+                },
+            }
         } catch (error) {
             throw new Error(error);
         }

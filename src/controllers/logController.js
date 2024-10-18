@@ -4,10 +4,7 @@ const logService = require('../services/logService');
 const getLogList = async (req, res) => {
     try {
         const result = await logService.getLogList(req.body);
-        res.sendResponse({
-            data: result,
-            message: '获取日志列表成功'
-        });
+        res.sendResponse(result);
     } catch (error) {
         responseErrorHandler(res, error);
     }

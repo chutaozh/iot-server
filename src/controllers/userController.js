@@ -62,11 +62,7 @@ const updatePassword = async (req, res) => {
 const getUserInfo = async (req, res) => {
     try {
         const result = await userService.getUserInfo(req.loginInfo?.userId);
-        res.sendResponse({
-            code: 200,
-            message: '获取成功',
-            data: result
-        });
+        res.sendResponse(result);
     } catch (error) {
         responseErrorHandler(res, error);
     }

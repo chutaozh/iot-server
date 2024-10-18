@@ -96,6 +96,7 @@ class UserService {
             const clientInfo = req.clientInfo;
             const now = (new Date().getTime() / 1000);
             const exp = (data?.exp) || 0 - (30 * 60);
+            const result = { code: 200, data: token, message: '刷新成功' };
 
             if (data?.ip === clientInfo?.ip && data?.ua === clientInfo?.ua && data?.domain === clientInfo?.domain && now > exp) {
                 const newToken = generateToken({
@@ -108,11 +109,11 @@ class UserService {
                 });
                 await cacheModel.deleteCache(data?.userId);
                 await cacheModel.addCache({ id: data?.userId, content: newToken, type: CacheType.TOKEN });
-                return newToken;
+                result.data = newToken;
+                return result;
             }
 
-            return token;
-
+            return result;
         } catch (error) {
             logModel.add(LogType.ERROR, error.message, 'userService.refreshToken', req.loginInfo?.userId);
             throw new Error(error);
@@ -285,7 +286,11 @@ class UserService {
                 roles: roleList?.map(dataFieldToCamelCase) || []
             };
 
-            return result;
+            return {
+                code: 200,
+                message: '获取成功',
+                data: result
+            };
         } catch (error) {
             logModel.add(LogType.ERROR, error.message, 'userService.getUserInfo', userId);
             throw new Error(error);

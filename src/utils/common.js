@@ -85,5 +85,7 @@ module.exports = {
     svgToBase64,
     dataFieldToSnakeCase,
     dataFieldToCamelCase,
-    responseErrorHandler
+    responseErrorHandler,
+    camelCaseToSnakeCase,
+    snakeCaseToCamelCase,
 }
