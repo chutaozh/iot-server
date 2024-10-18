@@ -7,3 +7,6 @@ CREATE TABLE `iot_user_role_ref` (
   `create_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO iot_db.iot_user_role_ref (user_id,role_id,create_time) VALUES
+	 (1000,1000,NOW());
