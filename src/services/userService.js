@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const { LogType, CacheType } = require('../utils/constant');
-const { dataFieldToSnakeCase } = require('../utils/common');
+const { dataFieldToSnakeCase, dataFieldToCamelCase } = require('../utils/common');
 const { generateToken, verifyToken } = require('../utils/tokenHandler');
 const logModel = require('../models/logModel');
 const cacheModel = require('../models/cacheModel');
@@ -129,7 +129,7 @@ class UserService {
                 return result;
             }
 
-            if(!roleId) {
+            if (!roleId) {
                 result.message = '必须分配角色';
                 return result;
             }
@@ -189,7 +189,7 @@ class UserService {
                     logContent.push(`修改账号状态：${user?.status === 1 ? '启用' : '禁用'} 改为 ${restProps.status === 1 ? '启用' : '禁用'}`);
                 }
 
-                if(logContent.length > 0){
+                if (logContent.length > 0) {
                     logContent.push(`账号：${user?.account}`);
                     logModel.add(LogType.OPERATION, logContent.join('；'), '', loginInfo?.userId);
                 }
@@ -266,6 +266,28 @@ class UserService {
             return result;
         } catch (error) {
             logModel.add(LogType.ERROR, error.message, 'userService.updatePassword', userId);
+            throw new Error(error);
+        }
+    }
+
+    /** 获取用户信息 */
+    static async getUserInfo(userId) {
+        try {
+            const user = await userModel.getUserById(userId);
+            const userRoles = await roleModel.getUserRoles([userId]);
+            const roleList = await roleModel.getRolesByIds(userRoles?.map((item) => item.role_id) || []);
+
+            const result = {
+                id: user.id,
+                status: user.status,
+                account: user.account,
+                userName: user.user_name,
+                roles: roleList?.map(dataFieldToCamelCase) || []
+            };
+
+            return result;
+        } catch (error) {
+            logModel.add(LogType.ERROR, error.message, 'userService.getUserInfo', userId);
             throw new Error(error);
         }
     }

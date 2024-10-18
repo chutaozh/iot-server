@@ -9,5 +9,6 @@ router.post('/add', userController.addUser);
 router.post('/update', userController.updateUser);
 router.post('/delete', userController.deleteUsers);
 router.post('/update_pwd', userController.updatePassword);
+router.post('/my_profile', userController.getUserInfo);
 
 module.exports = router;

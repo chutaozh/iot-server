@@ -59,4 +59,25 @@ const updatePassword = async (req, res) => {
     }
 }
 
-module.exports = { login, refreshToken, addUser, updateUser, deleteUsers, updatePassword };
+const getUserInfo = async (req, res) => {
+    try {
+        const result = await userService.getUserInfo(req.loginInfo?.userId);
+        res.sendResponse({
+            code: 200,
+            message: '获取成功',
+            data: result
+        });
+    } catch (error) {
+        responseErrorHandler(res, error);
+    }
+}
+
+module.exports = { 
+    login, 
+    refreshToken, 
+    addUser, 
+    updateUser, 
+    deleteUsers, 
+    updatePassword, 
+    getUserInfo
+ };
