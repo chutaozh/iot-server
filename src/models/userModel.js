@@ -103,10 +103,10 @@ class UserModel {
     static async updateUserById(id, user, loginInfo) {
         return new Promise((resolve, reject) => {
             const allowFields = ['user_name', 'status'];
-            const updateFields = Object.keys(user).filter((key) => allowFields.includes(key)).map(key => `${key} = ?`).join(', ');
-            const values = Object.values(user);
-
-            db.query(`UPDATE iot_user SET ${updateFields}, update_id = ?, update_time = NOW() WHERE id = ? AND is_del = 0`, [...values, loginInfo?.userId, id], (err, result) => {
+            const updateFields = Object.keys(user).filter((key) => allowFields.includes(key));
+            const values = updateFields.map(key=> user[key]);
+            
+            db.query(`UPDATE iot_user SET ${updateFields.map(key => `${key} = ?`).join(', ')}, update_id = ?, update_time = NOW() WHERE id = ? AND is_del = 0`, [...values, loginInfo?.userId, id], (err, result) => {
                 if (err) reject(err);
                 else resolve(result);
             });

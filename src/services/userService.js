@@ -168,7 +168,7 @@ class UserService {
     /** 修改用户 */
     static async updateUser(data, loginInfo) {
         try {
-            const { userId, ...restProps } = data;
+            const { userId, roleIds, ...restProps } = data;
             if (restProps?.hasOwnProperty('userName') && !restProps?.userName?.trim()) {
                 return {
                     code: 400,
@@ -176,20 +176,50 @@ class UserService {
                 };
             }
 
+            let tempCount = 0;
+            let updateUserFlag = false;
+            const logContent = [];
             const user = await userModel.getUserById(userId);
-            const res = await userModel.updateUserById(userId, dataFieldToSnakeCase(restProps), loginInfo);
+            const roles = await roleModel.getUserRoles([userId]);
 
-            if (res.affectedRows === 1) {
-                const logContent = [];
+            if (restProps?.hasOwnProperty('userName')) {
+                updateUserFlag = true;
 
-                if (restProps?.hasOwnProperty('userName') && user?.user_name !== restProps.userName) {
+                if (user?.user_name !== restProps.userName) {
                     logContent.push(`修改用户名：${user?.user_name} 改为 ${restProps.userName}`);
                 }
+            }
 
-                if (restProps?.hasOwnProperty('status') && user?.status !== restProps.status) {
+            if (restProps?.hasOwnProperty('status')) {
+                updateUserFlag = true;
+
+                if (user?.status !== restProps.status) {
                     logContent.push(`修改账号状态：${user?.status === 1 ? '启用' : '禁用'} 改为 ${restProps.status === 1 ? '启用' : '禁用'}`);
                 }
+            }
 
+            if (updateUserFlag) {
+                const res = await userModel.updateUserById(userId, dataFieldToSnakeCase(restProps), loginInfo);
+                tempCount += res.affectedRows;
+            }
+
+            const _roleIds = roles.map(role => role.role_id).sort((a, b) => a - b);
+            const changed = roleIds?.sort((a, b) => parseInt(a) - parseInt(b)).toString() !== _roleIds.toString();
+
+            if (roleIds?.length > 0) {
+                await roleModel.deleteUserRole(userId);
+                const roleRes = await roleModel.addUserRoles({ userId, roleIds });
+                tempCount += roleRes.affectedRows;
+
+                if (changed) {
+                    const newRoles = await roleModel.getRolesByIds(roleIds);
+                    logContent.push(`修改角色：改为 ${newRoles.map(role => role.role_name).join('、')}`);
+                }
+            }
+
+            const resCount = updateUserFlag ? 1 + (roleIds?.length || 0) : 1;
+            
+            if (tempCount === resCount) {
                 if (logContent.length > 0) {
                     logContent.push(`账号：${user?.account}`);
                     logModel.add(LogType.OPERATION, logContent.join('；'), '', loginInfo?.userId);
