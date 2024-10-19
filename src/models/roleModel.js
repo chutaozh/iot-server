@@ -20,7 +20,7 @@ class RoleModel {
     static async getRoleList({ roleType, keyword, pageNum, pageSize, orderBy = 'create_time', orderType = 'desc' } = {}) {
         return new Promise((resolve, reject) => {
             const allowOrderType = ['asc', 'desc'];
-            const allowOrderBy = ['role_name', 'role_type', 'create_time'];
+            const allowOrderBy = ['role_name', 'role_type', 'create_time','user_count'];
             const where = [];
 
             if (roleType) {
@@ -31,7 +31,7 @@ class RoleModel {
                 where.push(`(R.role_name LIKE '%${keyword}%' OR R.remark LIKE '%${keyword}%')`);
             }
 
-            const order = allowOrderBy.includes(orderBy) && allowOrderType.includes(orderType) ? `ORDER BY R.${orderBy} ${orderType}` : '';
+            const order = allowOrderBy.includes(orderBy) && allowOrderType.includes(orderType) ? `ORDER BY ${orderBy} ${orderType}` : '';
 
             const sql = `SELECT 
                             R.id, 
