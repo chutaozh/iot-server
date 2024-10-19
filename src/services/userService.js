@@ -218,7 +218,7 @@ class UserService {
             }
 
             const resCount = updateUserFlag ? 1 + (roleIds?.length || 0) : 1;
-            
+
             if (tempCount === resCount) {
                 if (logContent.length > 0) {
                     logContent.push(`账号：${user?.account}`);
@@ -244,14 +244,16 @@ class UserService {
     /** 删除用户 */
     static async deleteUsers({ userIds }, loginInfo) {
         try {
-            const res = await userModel.deleteUsers(userIds, loginInfo);
+            if (userIds?.length > 0) {
+                const res = await userModel.deleteUsers(userIds, loginInfo);
 
-            if (res.result.affectedRows >= 1) {
-                logModel.add(LogType.OPERATION, `删除用户：${res.users.map(item => item.account).join('，')}`, '', loginInfo?.userId);
-                return {
-                    code: 200,
-                    message: '删除成功'
-                };
+                if (res.result.affectedRows >= 1) {
+                    logModel.add(LogType.OPERATION, `删除用户：${res.users.map(item => item.account).join('，')}`, '', loginInfo?.userId);
+                    return {
+                        code: 200,
+                        message: '删除成功'
+                    };
+                }
             }
 
             return {
@@ -306,7 +308,7 @@ class UserService {
         try {
             const user = await userModel.getUserById(userId);
             const userRoles = await roleModel.getUserRoles([userId]);
-            const roleList = await roleModel.getRolesByIds(userRoles?.map((item) => item.role_id) || []);
+            const roleList = userRoles?.length > 0 ? await roleModel.getRolesByIds(userRoles?.map((item) => item.role_id) || []) : [];
 
             const result = {
                 id: user.id,
@@ -343,7 +345,7 @@ class UserService {
             });
             const userCount = userModel.getUserCount({ roleId, keyword, status, startTime, endTime });
             const res = await Promise.all([userList, userCount]);
-            const roleList = await roleModel.getRolesByUserIds(res[0].map(item => item.id));
+            const roleList = res[0].length > 0 ? await roleModel.getRolesByUserIds(res[0].map(item => item.id)) : [];
 
             return {
                 code: 200,

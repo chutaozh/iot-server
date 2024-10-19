@@ -34,7 +34,7 @@ class UserModel {
             const allowOrderBy = ['user_name', 'account', 'status', 'create_time'];
             const where = [];
 
-            if(String(status)) {
+            if (parseInt(status) === 0 || parseInt(status) === 1) {
                 where.push(`U.status = ${status}`);
             }
 
@@ -70,11 +70,11 @@ class UserModel {
 
     }
 
-    static async getUserCount({ roleId, keyword,  status, startTime, endTime }) {
+    static async getUserCount({ roleId, keyword, status, startTime, endTime }) {
         return new Promise((resolve, reject) => {
             const where = [];
 
-            if(String(status)) {
+            if (status === 0 || status === 1) {
                 where.push(`U.status = ${status}`);
             }
 
@@ -104,8 +104,8 @@ class UserModel {
         return new Promise((resolve, reject) => {
             const allowFields = ['user_name', 'status'];
             const updateFields = Object.keys(user).filter((key) => allowFields.includes(key));
-            const values = updateFields.map(key=> user[key]);
-            
+            const values = updateFields.map(key => user[key]);
+
             db.query(`UPDATE iot_user SET ${updateFields.map(key => `${key} = ?`).join(', ')}, update_id = ?, update_time = NOW() WHERE id = ? AND is_del = 0`, [...values, loginInfo?.userId, id], (err, result) => {
                 if (err) reject(err);
                 else resolve(result);
