@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const { LogType, CacheType } = require('../utils/constant');
-const { dataFieldToSnakeCase, dataFieldToCamelCase } = require('../utils/common');
+const { dataFieldToSnakeCase, dataFieldToCamelCase, camelCaseToSnakeCase } = require('../utils/common');
 const { generateToken, verifyToken } = require('../utils/tokenHandler');
 const logModel = require('../models/logModel');
 const cacheModel = require('../models/cacheModel');
@@ -293,6 +293,46 @@ class UserService {
             };
         } catch (error) {
             logModel.add(LogType.ERROR, error.message, 'userService.getUserInfo', userId);
+            throw new Error(error);
+        }
+    }
+
+    /** 获取用户列表 */
+    static async getUserList({ roleId, keyword, status, startTime, endTime, pageNum, pageSize, orderBy = 'create_time', orderType = 'desc' } = {}, loginInfo) {
+        try {
+            const userList = userModel.getUserList({
+                pageNum,
+                pageSize,
+                roleId,
+                keyword,
+                status,
+                startTime,
+                endTime,
+                orderBy: camelCaseToSnakeCase(orderBy),
+                orderType: orderType.toLowerCase()
+            });
+            const userCount = userModel.getUserCount({ roleId, keyword, status, startTime, endTime });
+            const res = await Promise.all([userList, userCount]);
+            const roleList = await roleModel.getRolesByUserIds(res[0].map(item => item.id));
+
+            return {
+                code: 200,
+                message: '获取列表成功',
+                data: {
+                    total: res[1],
+                    pageNum,
+                    pageSize,
+                    list: res[0].map(item => ({
+                        ...dataFieldToCamelCase(item),
+                        roles: roleList.filter(role => role.user_id === item.id).map(role => ({
+                            id: role.id,
+                            roleName: role.role_name
+                        }))
+                    }))
+                }
+            };
+        } catch (error) {
+            logModel.add(LogType.ERROR, error.message, 'userService.getUserList', loginInfo?.userId);
             throw new Error(error);
         }
     }

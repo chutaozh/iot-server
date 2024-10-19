@@ -19,7 +19,7 @@ class LogModel {
                 where.push(`L.log_type = '${type}'`);
             }
 
-            const sql = `SELECT L.*, U.user_name FROM iot_log L JOIN iot_user U ON L.create_id = U.id ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY L.create_time DESC LIMIT ${offset}, ${limit}`;
+            const sql = `SELECT L.*, U.user_name FROM iot_log L LEFT JOIN iot_user U ON L.create_id = U.id ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY L.create_time DESC LIMIT ${offset}, ${limit}`;
             db.promise().query(sql).then(result => {
                 resolve(result[0]);
             }).catch(reject);

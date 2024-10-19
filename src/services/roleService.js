@@ -149,7 +149,7 @@ class RoleService {
     /** 获取角色列表 */
     static async getRoleList({ roleType, keyword, pageNum, pageSize, orderBy = 'createTime', orderType = 'desc' } = {}, loginInfo) {
         try {
-            const result = await roleModel.getRoleList({
+            const roleList = roleModel.getRoleList({
                 pageNum,
                 pageSize,
                 roleType,
@@ -157,15 +157,17 @@ class RoleService {
                 orderBy: camelCaseToSnakeCase(orderBy),
                 orderType: orderType.toLowerCase()
             });
-            const total = await roleModel.getRoleCount({roleType, keyword});
+            const roleCount = roleModel.getRoleCount({ roleType, keyword });
+            const res = await Promise.all([roleList, roleCount]);
+
             return {
                 code: 200,
                 message: '获取列表成功',
                 data: {
-                    total,
+                    total: res[1],
                     pageNum,
                     pageSize,
-                    list: result.map(dataFieldToCamelCase)
+                    list: res[0].map(dataFieldToCamelCase)
                 }
             }
         } catch (error) {

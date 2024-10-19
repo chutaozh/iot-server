@@ -24,11 +24,11 @@ class RoleModel {
             const where = [];
 
             if (roleType) {
-                where.push(`role_type = ${roleType}`);
+                where.push(`R.role_type = ${roleType}`);
             }
 
             if (keyword) {
-                where.push(`(role_name LIKE '%${keyword}%' OR remark LIKE '%${keyword}%')`);
+                where.push(`(R.role_name LIKE '%${keyword}%' OR R.remark LIKE '%${keyword}%')`);
             }
 
             const order = allowOrderBy.includes(orderBy) && allowOrderType.includes(orderType) ? `ORDER BY R.${orderBy} ${orderType}` : '';
@@ -42,10 +42,10 @@ class RoleModel {
                             R.create_time
                         FROM iot_role R 
                         LEFT JOIN iot_user_role_ref UR ON R.id = UR.role_id 
-                        WHERE is_del = 0 ${where.length > 0 ? 'AND ' + where.join(' AND ') : ''} 
+                        WHERE R.is_del = 0 ${where.length > 0 ? 'AND ' + where.join(' AND ') : ''} 
                         GROUP BY R.id
                         ${order}
-                        LIMIT ${pageSize} OFFSET ${pageNum - 1}`;
+                        LIMIT ${(pageNum - 1) * pageSize}, ${pageSize}`;
 
             db.promise().query(sql).then(result => {
                 resolve(result[0]);
@@ -142,6 +142,15 @@ class RoleModel {
     static async getRolesByIds(ids) {
         return new Promise((resolve, reject) => {
             db.query('SELECT id, role_name FROM iot_role WHERE id IN (?) AND is_del = 0', [ids], (err, result) => {
+                if (err) reject(err);
+                else resolve(result);
+            });
+        })
+    }
+
+    static async getRolesByUserIds(userIds) {
+        return new Promise((resolve, reject) => {
+            db.query('SELECT UR.user_id, UR.role_id as id, R.role_name FROM iot_user_role_ref UR LEFT JOIN iot_role R ON R.id = UR.role_id WHERE UR.user_id IN (?)', [userIds], (err, result) => {
                 if (err) reject(err);
                 else resolve(result);
             });

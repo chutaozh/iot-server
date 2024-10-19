@@ -68,6 +68,15 @@ const getUserInfo = async (req, res) => {
     }
 }
 
+const getUserList = async (req, res) => {
+    try {
+        const result = await userService.getUserList(req.body, req.loginInfo);
+        res.sendResponse(result);
+    } catch (error) {
+        responseErrorHandler(res, error);
+    }
+}
+
 module.exports = { 
     login, 
     refreshToken, 
@@ -75,5 +84,6 @@ module.exports = {
     updateUser, 
     deleteUsers, 
     updatePassword, 
-    getUserInfo
+    getUserInfo,
+    getUserList
  };

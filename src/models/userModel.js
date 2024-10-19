@@ -28,6 +28,78 @@ class UserModel {
         });
     }
 
+    static async getUserList({ roleId, keyword, status, startTime, endTime, pageNum, pageSize, orderBy = 'create_time', orderType = 'desc' } = {}) {
+        return new Promise((resolve, reject) => {
+            const allowOrderType = ['asc', 'desc'];
+            const allowOrderBy = ['user_name', 'account', 'status', 'create_time'];
+            const where = [];
+
+            if(String(status)) {
+                where.push(`U.status = ${status}`);
+            }
+
+            if (keyword) {
+                where.push(`(U.user_name LIKE '%${keyword}%' OR U.account LIKE '%${keyword}%')`);
+            }
+
+            if (startTime && endTime) {
+                where.push(`U.create_time BETWEEN '${startTime}' AND '${endTime}'`);
+            }
+
+            if (roleId) {
+                where.push(`UR.role_id = ${roleId}`);
+            }
+
+            const order = allowOrderBy.includes(orderBy) && allowOrderType.includes(orderType) ? `ORDER BY U.${orderBy} ${orderType}` : '';
+
+            const sql = `SELECT 
+                            U.id, 
+                            U.user_name, 
+                            U.account, 
+                            U.status,
+                            U.create_time
+                        FROM iot_user U
+                        LEFT JOIN iot_user_role_ref UR ON U.id = UR.user_id 
+                        WHERE U.is_del = 0 ${where.length > 0 ? 'AND ' + where.join(' AND ') : ''} 
+                        ${order}
+                        LIMIT ${(pageNum - 1) * pageSize}, ${pageSize}`;
+            db.promise().query(sql).then(result => {
+                resolve(result[0]);
+            }).catch(reject);
+        });
+
+    }
+
+    static async getUserCount({ roleId, keyword,  status, startTime, endTime }) {
+        return new Promise((resolve, reject) => {
+            const where = [];
+
+            if(String(status)) {
+                where.push(`U.status = ${status}`);
+            }
+
+            if (keyword) {
+                where.push(`(U.user_name LIKE '%${keyword}%' OR U.account LIKE '%${keyword}%')`);
+            }
+
+            if (startTime && endTime) {
+                where.push(`U.create_time BETWEEN '${startTime}' AND '${endTime}'`);
+            }
+
+            if (roleId) {
+                where.push(`UR.role_id = ${roleId}`);
+            }
+
+            const sql = `SELECT COUNT(*) AS count
+                        FROM iot_user U
+                        LEFT JOIN iot_user_role_ref UR ON U.id = UR.user_id 
+                        WHERE U.is_del = 0 ${where.length > 0 ? 'AND ' + where.join(' AND ') : ''}`;
+            db.promise().query(sql).then(result => {
+                resolve(result[0][0].count);
+            }).catch(reject);
+        })
+    }
+
     static async updateUserById(id, user, loginInfo) {
         return new Promise((resolve, reject) => {
             const allowFields = ['user_name', 'status'];
