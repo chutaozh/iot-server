@@ -8,7 +8,7 @@ const responseHandler = (req, res, next) => {
             code,
             success: code === 200,
             message,
-            data,
+            value: data,
             datetime: new Date().getTime(),
         });
     };
