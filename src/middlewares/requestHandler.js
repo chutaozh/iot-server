@@ -30,7 +30,7 @@ const requestHandler = async (req, res, next) => {
         return res.status(200).json({
             code: 401,
             success: false,
-            message: '未登录',
+            message: '请登录账号',
             data: null,
         });
     }
@@ -57,7 +57,7 @@ const requestHandler = async (req, res, next) => {
             }
             
             if (token !== cache?.content) {
-                return expCallback(403, '账号异地登陆');
+                return expCallback(403, '您的账号已在其他地方登录');
             }
 
             req.loginInfo = { ...data };
