@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 3000;
 const allowedOrigins = [
     'http://localhost',
     'http://localhost:3000',
+    'http://localhost:5173',
     // 'http://www.xxxx.com'
 ];
 
@@ -22,7 +23,7 @@ const allowedOrigins = [
 const corsOptions = {
     origin: (origin, callback) => {
         // 如果请求的源在允许的来源列表中，则允许
-        if (!allowedOrigins.includes(origin) || !origin) {
+        if (allowedOrigins.includes(origin) || !origin) {
             callback(null, true);
         } else {
             callback(new Error('不允许的跨域请求'));

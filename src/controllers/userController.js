@@ -13,11 +13,7 @@ const login = async (req, res) => {
 const refreshToken = async (req, res) => {
     try {
         const result = await userService.refreshToken(req);
-        res.sendResponse({
-            code: 200,
-            data: result,
-            message: '刷新成功'
-        });
+        res.sendResponse(result);
     } catch (error) {
         responseErrorHandler(res, error);
     }
