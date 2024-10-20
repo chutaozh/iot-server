@@ -1,9 +1,19 @@
 const { responseErrorHandler } = require('../utils/common');
 const userService = require('../services/userService');
+const cacheService = require('../services/cacheService');
 
 const login = async (req, res) => {
     try {
         const result = await userService.login(req.body, req.clientInfo);
+        res.sendResponse(result);
+    } catch (error) {
+        responseErrorHandler(res, error);
+    }
+};
+
+const logout = async (req, res) => {
+    try {
+        const result = await cacheService.deleteCache(req.loginInfo?.userId);
         res.sendResponse(result);
     } catch (error) {
         responseErrorHandler(res, error);
@@ -75,6 +85,7 @@ const getUserList = async (req, res) => {
 
 module.exports = { 
     login, 
+    logout,
     refreshToken, 
     addUser, 
     updateUser, 

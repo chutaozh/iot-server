@@ -52,9 +52,11 @@ class CacheService {
 
     static async deleteCache(id) {
         try {
-            if (id) {
-                await cacheModel.deleteCache(id);
-            }
+            const res = await cacheModel.deleteCache(id);
+            return {
+                code: res.affectedRows >= 1 ? 200 : 400,
+                message: ''
+            };
         } catch (error) {
             throw new Error(error);
         }

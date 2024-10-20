@@ -4,6 +4,7 @@ const userController = require('../controllers/userController');
 const router = express.Router();
 
 router.post('/login', userController.login);
+router.get('/logout', userController.logout);
 router.get('/refresh_token', userController.refreshToken);
 router.post('/list', userController.getUserList);
 router.post('/add', userController.addUser);
