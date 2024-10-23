@@ -47,7 +47,7 @@ class UserModel {
             }
 
             if (roleId) {
-                where.push(`UR.role_id = ${roleId}`);
+                where.push(`U.id IN (SELECT UR.user_id FROM iot_user_role_ref UR WHERE UR.role_id = '${roleId}')`);
             }
 
             const order = allowOrderBy.includes(orderBy) && allowOrderType.includes(orderType) ? `ORDER BY U.${orderBy} ${orderType}` : '';
@@ -59,7 +59,6 @@ class UserModel {
                             U.status,
                             U.create_time
                         FROM iot_user U
-                        LEFT JOIN iot_user_role_ref UR ON U.id = UR.user_id 
                         WHERE U.is_del = 0 ${where.length > 0 ? 'AND ' + where.join(' AND ') : ''} 
                         ${order}
                         LIMIT ${(pageNum - 1) * pageSize}, ${pageSize}`;
@@ -87,12 +86,11 @@ class UserModel {
             }
 
             if (roleId) {
-                where.push(`UR.role_id = ${roleId}`);
+                where.push(`U.id IN (SELECT UR.user_id FROM iot_user_role_ref UR WHERE UR.role_id = '${roleId}')`);
             }
 
             const sql = `SELECT COUNT(*) AS count
                         FROM iot_user U
-                        LEFT JOIN iot_user_role_ref UR ON U.id = UR.user_id 
                         WHERE U.is_del = 0 ${where.length > 0 ? 'AND ' + where.join(' AND ') : ''}`;
             db.promise().query(sql).then(result => {
                 resolve(result[0][0].count);

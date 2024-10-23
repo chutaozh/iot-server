@@ -209,7 +209,7 @@ class UserService {
             if (roleIds?.length > 0) {
                 await roleModel.deleteUserRole(userId);
                 const roleRes = await roleModel.addUserRoles({ userId, roleIds });
-                tempCount += roleRes.affectedRows;
+                tempCount += roleRes.affectedRows > 0 ? 1 : 0;
 
                 if (changed) {
                     const newRoles = await roleModel.getRolesByIds(roleIds);
@@ -218,7 +218,7 @@ class UserService {
             }
 
             const resCount = updateUserFlag ? 1 + (roleIds?.length || 0) : 1;
-
+            
             if (tempCount === resCount) {
                 if (logContent.length > 0) {
                     logContent.push(`账号：${user?.account}`);
