@@ -218,7 +218,7 @@ class UserService {
             }
 
             const resCount = updateUserFlag ? 1 + (roleIds?.length || 0) : 1;
-            
+
             if (tempCount === resCount) {
                 if (logContent.length > 0) {
                     logContent.push(`账号：${user?.account}`);
@@ -358,6 +358,7 @@ class UserService {
                         ...dataFieldToCamelCase(item),
                         roles: roleList.filter(role => role.user_id === item.id).map(role => ({
                             id: role.id,
+                            roleType: role.role_type,
                             roleName: role.role_name
                         }))
                     }))

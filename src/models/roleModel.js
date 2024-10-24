@@ -141,7 +141,7 @@ class RoleModel {
 
     static async getRolesByIds(ids) {
         return new Promise((resolve, reject) => {
-            db.query('SELECT id, role_name FROM iot_role WHERE id IN (?) AND is_del = 0', [ids], (err, result) => {
+            db.query('SELECT id, role_type, role_name FROM iot_role WHERE id IN (?) AND is_del = 0', [ids], (err, result) => {
                 if (err) reject(err);
                 else resolve(result);
             });
@@ -150,7 +150,7 @@ class RoleModel {
 
     static async getRolesByUserIds(userIds) {
         return new Promise((resolve, reject) => {
-            db.query('SELECT UR.user_id, UR.role_id as id, R.role_name FROM iot_user_role_ref UR LEFT JOIN iot_role R ON R.id = UR.role_id WHERE UR.user_id IN (?)', [userIds], (err, result) => {
+            db.query('SELECT UR.user_id, UR.role_id as id, R.role_type, R.role_name FROM iot_user_role_ref UR LEFT JOIN iot_role R ON R.id = UR.role_id WHERE UR.user_id IN (?)', [userIds], (err, result) => {
                 if (err) reject(err);
                 else resolve(result);
             });
