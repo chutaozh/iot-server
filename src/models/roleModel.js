@@ -20,7 +20,7 @@ class RoleModel {
     static async getRoleList({ roleType, keyword, pageNum, pageSize, orderBy = 'create_time', orderType = 'desc' } = {}) {
         return new Promise((resolve, reject) => {
             const allowOrderType = ['asc', 'desc'];
-            const allowOrderBy = ['role_name', 'role_type', 'create_time','user_count'];
+            const allowOrderBy = ['role_name', 'role_type', 'create_time', 'user_count'];
             const where = [];
 
             if (roleType) {
@@ -105,7 +105,7 @@ class RoleModel {
         return new Promise((resolve, reject) => {
             const allowFields = ['role_type', 'role_name', 'remark'];
             const updateFields = Object.keys(role).filter((key) => allowFields.includes(key));
-            const values = updateFields.map(key=> role[key]).map((value) => value === '' ? null : value);
+            const values = updateFields.map(key => role[key]).map((value) => value === '' ? null : value);
 
             db.query(`UPDATE iot_role SET ${updateFields.map(key => `${key} = ?`).join(', ')}, update_id = ?, update_time = NOW() WHERE id = ? AND role_type != 1 AND is_del = 0`, [...values, loginInfo?.userId, id], (err, result) => {
                 if (err) reject(err);
