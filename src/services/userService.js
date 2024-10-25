@@ -218,7 +218,7 @@ class UserService {
             }
 
             const resCount = updateUserFlag ? 1 + (roleIds?.length || 0) : 1;
-console.log('tempCount', tempCount, 'resCount', resCount, roleIds);
+            
             if (tempCount === resCount) {
                 if (logContent.length > 0) {
                     logContent.push(`账号：${user?.account}`);
