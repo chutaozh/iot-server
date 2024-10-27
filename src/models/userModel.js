@@ -66,7 +66,6 @@ class UserModel {
                 resolve(result[0]);
             }).catch(reject);
         });
-
     }
 
     static async getUserCount({ roleId, keyword, status, startTime, endTime }) {

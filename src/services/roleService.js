@@ -81,14 +81,16 @@ class RoleService {
     /** 删除角色 */
     static async deleteRoles({ roleIds }, loginInfo) {
         try {
-            const res = await roleModel.deleteRoles(roleIds, loginInfo);
+            if (roleIds?.length > 0) {
+                const res = await roleModel.deleteRoles(roleIds, loginInfo);
 
-            if (res.result.affectedRows >= 1) {
-                logModel.add(LogType.OPERATION, `删除角色：${res.roles.map(item => item.role_name).join('，')}`, '', loginInfo?.userId);
-                return {
-                    code: 200,
-                    message: '删除成功'
-                };
+                if (res.result.affectedRows >= 1) {
+                    logModel.add(LogType.OPERATION, `删除角色：${res.roles.map(item => item.role_name).join('，')}`, '', loginInfo?.userId);
+                    return {
+                        code: 200,
+                        message: '删除成功'
+                    };
+                }
             }
 
             return {

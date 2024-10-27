@@ -6,6 +6,7 @@ const responseHandler = require('./middlewares/responseHandler');
 const logRoutes = require('./routes/logRoutes');
 const userRoutes = require('./routes/userRoutes');
 const roleRoutes = require('./routes/roleRoutes');
+const comboRoutes = require('./routes/comboRoutes');
 const commonRoutes = require('./routes/commonRoutes');
 
 const app = express();
@@ -43,6 +44,7 @@ app.use(cors(corsOptions)); // 使用 CORS 中间件
 app.use('/api/logs', logRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/role', roleRoutes);
+app.use('/api/combo', comboRoutes);
 app.use('/api/common', commonRoutes);
 
 // 404 处理程序

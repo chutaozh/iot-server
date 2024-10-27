@@ -12,7 +12,7 @@ class LogService {
                     total,
                     pageNum,
                     pageSize,
-                    list: result.map(item => dataFieldToCamelCase({ ...item, create_time: new Date(item.create_time).toLocaleString() })),
+                    list: result.map(dataFieldToCamelCase),
                 },
             }
         } catch (error) {

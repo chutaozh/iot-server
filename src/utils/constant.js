@@ -9,7 +9,19 @@ const CacheType = {
     TOKEN: 2, // token
 }
 
+const ComboTypeMap = {
+    1: '流量包',
+    2: '短信包',
+}
+
+const ComboStatusMap = {
+    1: '上架',
+    2: '下架',
+}
+
 module.exports = {
     LogType,
-    CacheType
+    CacheType,
+    ComboTypeMap,
+    ComboStatusMap
 }
