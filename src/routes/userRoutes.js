@@ -7,6 +7,7 @@ router.post('/login', userController.login);
 router.get('/logout', userController.logout);
 router.get('/refresh_token', userController.refreshToken);
 router.post('/list', userController.getUserList);
+router.get('/list_all', userController.getAllUserList);
 router.post('/add', userController.addUser);
 router.post('/update', userController.updateUser);
 router.post('/delete', userController.deleteUsers);

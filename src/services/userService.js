@@ -218,7 +218,7 @@ class UserService {
             }
 
             const resCount = updateUserFlag ? 1 + (roleIds?.length || 0) : 1;
-            
+
             if (tempCount === resCount) {
                 if (logContent.length > 0) {
                     logContent.push(`账号：${user?.account}`);
@@ -366,6 +366,21 @@ class UserService {
             };
         } catch (error) {
             logModel.add(LogType.ERROR, error.message, 'userService.getUserList', loginInfo?.userId);
+            throw new Error(error);
+        }
+    }
+
+    /** 获取所有用户 */
+    static async getAllUserList(userName, loginInfo) {
+        try {
+            const result = await userModel.getAllUserList(userName);
+            return {
+                code: 200,
+                message: '获取所有用户成功',
+                data: result.map(dataFieldToCamelCase)
+            };
+        } catch (error) {
+            logModel.add(LogType.ERROR, error.message, 'userService.getAllUserList', loginInfo?.userId);
             throw new Error(error);
         }
     }

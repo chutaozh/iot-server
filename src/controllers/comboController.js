@@ -66,7 +66,7 @@ const getComboList = async (req, res) => {
 
 const getAllComboList = async (req, res) => {
     try {
-        const result = await comboService.getAllComboList(req.query.comboName, req.loginInfo);
+        const result = await comboService.getAllComboList(req.query.keyword, req.loginInfo);
         return res.sendResponse(result);
     } catch (error) {
         return responseErrorHandler(res, error);

@@ -7,6 +7,7 @@ const logRoutes = require('./routes/logRoutes');
 const userRoutes = require('./routes/userRoutes');
 const roleRoutes = require('./routes/roleRoutes');
 const comboRoutes = require('./routes/comboRoutes');
+const clientRoutes = require('./routes/clientRoutes');
 const commonRoutes = require('./routes/commonRoutes');
 
 const app = express();
@@ -45,6 +46,7 @@ app.use('/api/logs', logRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/role', roleRoutes);
 app.use('/api/combo', comboRoutes);
+app.use('/api/client', clientRoutes);
 app.use('/api/common', commonRoutes);
 
 // 404 处理程序

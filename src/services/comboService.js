@@ -198,9 +198,9 @@ class ComboService {
     }
 
     /** 获取所有套餐列表 */
-    static async getAllComboList(comboName, loginInfo) {
+    static async getAllComboList(keyword, loginInfo) {
         try {
-            const result = await comboModel.getComboListAll({ comboName });
+            const result = await comboModel.getComboListAll({ keyword });
             return {
                 code: 200,
                 message: '获取所有套餐成功',

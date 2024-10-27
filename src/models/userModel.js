@@ -97,6 +97,15 @@ class UserModel {
         })
     }
 
+    static async getAllUserList(keyword) {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT id, user_name, account FROM iot_user WHERE user_name LIKE '%${keyword}%' OR account LIKE '%${keyword}%' AND status = 1 AND is_del = 0`;
+            db.promise().query(sql).then(result => {
+                resolve(result[0]);
+            }).catch(reject);
+        })
+    }
+
     static async updateUserById(id, user, loginInfo) {
         return new Promise((resolve, reject) => {
             const allowFields = ['user_name', 'status'];

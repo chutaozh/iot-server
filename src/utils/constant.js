@@ -19,9 +19,15 @@ const ComboStatusMap = {
     2: '下架',
 }
 
+const ClientTypeMap = {
+    1: '个人客户',
+    2: '企业客户',
+}
+
 module.exports = {
     LogType,
     CacheType,
     ComboTypeMap,
-    ComboStatusMap
+    ComboStatusMap,
+    ClientTypeMap
 }

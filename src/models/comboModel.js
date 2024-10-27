@@ -166,26 +166,18 @@ class ComboModel {
         });
     }
 
-    static async getComboListAll({ comboName }) {
+    static async getComboListAll({ keyword }) {
         return new Promise((resolve, reject) => {
             const where = [];
 
-            if (comboName) {
-                where.push(`combo_name LIKE '%${comboName}%'`);
+            if (keyword) {
+                where.push(`combo_no LIKE '%${keyword}%' OR combo_name LIKE '%${keyword}%'`);
             }
 
             const sql = `SELECT 
                             id,
                             combo_no, 
-                            combo_name, 
-                            combo_period, 
-                            combo_capacity,
-                            combo_type, 
-                            standard_tariff,
-                            sales_price,
-                            status,
-                            remark,
-                            create_time
+                            combo_name
                         FROM iot_combo
                         WHERE is_del = 0 AND status = 1 ${where.length > 0 ? 'AND ' + where.join(' AND ') : ''}`;
             db.promise().query(sql).then(result => {
