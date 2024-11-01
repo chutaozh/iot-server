@@ -62,27 +62,25 @@ class ComboService {
     }
 
     /** 上下架 */
-    static async updateComboStatusById({ id, status }, loginInfo) {
+    static async updateComboStatusByIds({ ids, status }, loginInfo) {
         try {
             const result = { code: 400, message: '操作失败' };
 
-            if (![1, 2].includes(parseInt(status))) {
+            if (ids?.length === 0 || ![1, 2].includes(parseInt(status))) {
                 return result;
             }
 
-            const res = await comboModel.updateComboStatusById(id, status, loginInfo);
+            const res = await comboModel.updateComboStatusByIds(ids, status, loginInfo);
 
-            if (res.affectedRows === 1) {
+            if (res.result.affectedRows === 1) {
                 result.code = 200;
                 result.message = '操作成功';
-                comboModel.getComboById(id).then((info) => {
-                    logModel.add(LogType.OPERATION, `${ComboStatusMap[info.status]}套餐：${info.combo_no}|${info.combo_name}`, '', loginInfo?.userId);
-                });
+                logModel.add(LogType.OPERATION, `${ComboStatusMap[status]}套餐：${res.combos.map(item => `${item.combo_no}|${item.combo_name}`)}`, '', loginInfo?.userId);
             }
 
             return result;
         } catch (error) {
-            logModel.add(LogType.ERROR, error.message, 'comboService.updateComboStatusById', loginInfo?.userId);
+            logModel.add(LogType.ERROR, error.message, 'comboService.updateComboStatusByIds', loginInfo?.userId);
             throw new Error(error);
         }
     }

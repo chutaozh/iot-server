@@ -48,11 +48,20 @@ class ComboModel {
         });
     }
 
-    static async updateComboStatusById(id, status, loginInfo) {
+    static async updateComboStatusByIds(ids, status, loginInfo) {
         return new Promise((resolve, reject) => {
-            db.query(`UPDATE iot_combo SET status = ?, update_id = ?, update_time = NOW() WHERE id = ? AND is_del = 0`, [status, loginInfo?.userId, id], (err, result) => {
-                if (err) reject(err);
-                else resolve(result);
+            db.query(`UPDATE iot_combo SET status = ?, update_id = ?, update_time = NOW() WHERE id IN (?) AND is_del = 0`, [status, loginInfo?.userId, ids], (err, result) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    db.query('SELECT id, combo_no, combo_name FROM iot_combo WHERE id IN (?)', [ids], (_, combos) => {
+                        resolve({
+                            result,
+                            combos
+                        });
+                    });
+                }
             });
         });
     }

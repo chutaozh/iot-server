@@ -21,7 +21,7 @@ const updateCombo = async (req, res) => {
 
 const updateComboStatus = async (req, res) => {
     try {
-        const result = await comboService.updateComboStatusById(req.body, req.loginInfo);
+        const result = await comboService.updateComboStatusByIds(req.body, req.loginInfo);
         return res.sendResponse(result);
     } catch (error) {
         return responseErrorHandler(res, error);
