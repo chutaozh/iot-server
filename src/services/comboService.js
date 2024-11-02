@@ -72,7 +72,7 @@ class ComboService {
 
             const res = await comboModel.updateComboStatusByIds(ids, status, loginInfo);
 
-            if (res.result.affectedRows === 1) {
+            if (res.result.affectedRows === ids?.length) {
                 result.code = 200;
                 result.message = '操作成功';
                 logModel.add(LogType.OPERATION, `${ComboStatusMap[status]}套餐：${res.combos.map(item => `${item.combo_no}|${item.combo_name}`)}`, '', loginInfo?.userId);
